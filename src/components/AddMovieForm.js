@@ -1,120 +1,106 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
-
+import { baseURL } from "./EditMovieForm";
 import axios from "axios";
 
-export const baseURL = "http://localhost:9000/api/movies";
+const initialAddMovie = {
+  title: "",
+  director: "",
+  genre: "",
+  metascore: 0,
+  description: "",
+};
 
-const EditMovieForm = (props) => {
+const AddMovieForm = (props) => {
   const { push } = useHistory();
-  const { id } = useParams();
-
+  const [addMovie, setAddMovie] = useState(initialAddMovie);
   const { setMovies } = props;
-  const [movie, setMovie] = useState({
-    title: "",
-    director: "",
-    genre: "",
-    metascore: 0,
-    description: "",
-  });
-
-  useEffect(() => {
-    axios
-      .get(`${baseURL}/${id}`)
-      .then((res) => {
-        setMovie(res.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
 
   const handleChange = (e) => {
-    setMovie({
-      ...movie,
-      [e.target.name]: e.target.value,
+    const { name, value } = e.target;
+    setAddMovie({
+      ...addMovie,
+      [name]: value,
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .put(`${baseURL}/${id}`, movie)
+      .post(baseURL, addMovie)
       .then((res) => {
         setMovies(res.data);
-        push(`/movies/${movie.id}`);
+        push("/movies");
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
-
-  const { title, director, genre, metascore, description } = movie;
 
   return (
     <div className="col">
       <div className="modal-content">
-        <form onSubmit={handleSubmit}>
+        <form>
           <div className="modal-header">
             <h4 className="modal-title">
-              Edit <strong>{movie.title}</strong>
+              Add <strong>{addMovie.title}</strong>
             </h4>
           </div>
           <div className="modal-body">
             <div className="form-group">
               <label>Title</label>
               <input
-                value={title}
-                onChange={handleChange}
                 name="title"
                 type="text"
                 className="form-control"
+                value={addMovie.title}
+                onChange={handleChange}
               />
             </div>
             <div className="form-group">
               <label>Director</label>
               <input
-                value={director}
-                onChange={handleChange}
                 name="director"
                 type="text"
                 className="form-control"
+                value={addMovie.director}
+                onChange={handleChange}
               />
             </div>
             <div className="form-group">
               <label>Genre</label>
               <input
-                value={genre}
-                onChange={handleChange}
                 name="genre"
                 type="text"
                 className="form-control"
+                value={addMovie.genre}
+                onChange={handleChange}
               />
             </div>
             <div className="form-group">
               <label>Metascore</label>
               <input
-                value={metascore}
-                onChange={handleChange}
                 name="metascore"
                 type="number"
                 className="form-control"
+                value={addMovie.metascore}
+                onChange={handleChange}
               />
             </div>
             <div className="form-group">
               <label>Description</label>
               <textarea
-                value={description}
-                onChange={handleChange}
                 name="description"
                 className="form-control"
+                value={addMovie.description}
+                onChange={handleChange}
               ></textarea>
             </div>
           </div>
           <div className="modal-footer">
-            <input type="submit" className="btn btn-info" value="Save" onSubmit={handleSubmit} />
-            <Link to={`/movies/${id}`}>
+            <input type="submit" className="btn btn-info" value="Add" onClick={handleSubmit} />
+            <Link to={`/movies`}>
               <input type="button" className="btn btn-default" value="Cancel" />
             </Link>
           </div>
@@ -124,4 +110,4 @@ const EditMovieForm = (props) => {
   );
 };
 
-export default EditMovieForm;
+export default AddMovieForm;
