@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import axios from "axios";
 
-const baseURL = "http://localhost:9000/api/movies";
+export const baseURL = "http://localhost:9000/api/movies";
 
 const EditMovieForm = (props) => {
   const { push } = useHistory();
